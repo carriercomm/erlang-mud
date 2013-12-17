@@ -1,0 +1,66 @@
+Objects
+    Actors
+        NPCs
+        PCs
+    Items
+        Environment
+            Doors
+            Walls
+        Usables
+            Keys
+            Weapons
+            Whatever
+
+There is a process for every object. Yes, that's a lot processes. Does it
+    scale well in Erlang? I don't know, definitely maybe.
+
+The process for every object contains the authoritative state of that object. If the state
+    changes for any reason, the process commits the state change to external storage (in
+    case of a crash, so that the restarted process can pick up where the old left off),
+    then loops.
+
+External changes to the state of an object are achieved by sending a message requesting
+    that the object to change its state. I'm not yet sure if these calls must be sync,
+    async, or both. If each change call requires a commit to external storage then the performance of that storage will be critical. 
+
+A supervisor ensures that all object processes are correctly spawned at system start, and continue to run through the lifetime of the system. I'm not sure if there should be a single supervisor for all objects, or one per object class, or perhaps some other useful grouping (e.g. "zones" which may be loaded/unloaded at will).
+
+Creating new objects involves spawning a process with the appropriate code type and initial state, and adding it as a supervised child under the object supervisor.
+
+"Loading" an object involves reading the state and module-name for an object in external storage, and spawning a new process using that module/state.
+
+
+
+The object datastore should have the following fields:
+- uniqueID
+- loadOnStartup?
+- start routine {M,F,A}
+- state
+
+##############################################################################
+
+Locations
+
+Object locations are stored along with the state of the objects themselves.
+An external port may be used to maintain a k-d tree (two or three dimensions) for quickly finding nearby objects, e.g. all objects within 1 meter (the ground you're standing on and so forth).
+
+
+##############################################################################
+
+Supervision
+
+Application master
+    mud_sup: one_for_all, 1 restart, 10 seconds
+        location_port (worker, permanent, brutal_kill)
+            external location port driver
+        object_sup (supervisor, permanent, 120): one_for_one, 10 restarts, 10 seconds
+            [objects] (worker, permanent, 5)
+        loader (worker, transient, brutal_kill)
+        text_hci_sup (supervisor, permanent, 10): one_for_all, 2 restarts, 10 seconds
+            text_hci_worker_sup (supervisor, permanent, 10): simple_one_for_one, 1 restarts, 10 seconds
+                [workers] (worker, temporary, brutal_kill)
+            text_hci_listener (worker, permanent, 10)
+
+
+
+kdtree from kdtree.googlecode.com/svn/trunk

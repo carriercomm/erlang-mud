@@ -1,0 +1,10 @@
+{application, mud,
+    [{description, "Multi-User Dungeon (game)"},
+     {vsn, "1.0"},
+     {modules, [mud, mud_sup, object_sup, loader, object, actor]},
+     {registered, [mud_sup, object_sup]},
+     {applications, [kernel, stdlib, mnesia, sasl]},
+     {mod, {mud_app, []}},
+     {env, []}
+    ]
+}.
