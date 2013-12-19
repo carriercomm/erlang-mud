@@ -1,5 +1,5 @@
 -module(trie).
--export([new/0, add_term/3, lookup_term/2]).
+-export([new/0, delete/1, add_term/3, lookup_term/2]).
 % -compile(export_all).
 -record(trie_node,
         {name = "",
@@ -11,6 +11,9 @@ new() ->
     digraph:add_vertex(G, V, #trie_node{name="", value=undefined}),
     {G, V}.
 
+delete(Trie) ->
+    {Digraph, _} = Trie,
+    digraph:delete(Digraph).
 
 lookup_term(Trie, Term) ->
     {G, Root} = Trie,
