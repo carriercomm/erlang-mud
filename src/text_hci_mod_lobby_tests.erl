@@ -88,7 +88,7 @@ attach_input(_) ->
     ].
 
 setup() ->
-    code:add_path("meck/ebin"),
+    code:add_path("../meck/ebin"),
     meck:new(gen_tcp, [unstick]),
     %meck:expect(gen_tcp, send, fun(_Socket, Msg) -> io:format("meck: passing along this msg: ~p~n", [Msg]), self() ! {tcp_sent, Msg}, ok end),
     meck:expect(gen_tcp, send, fun(_Socket, Msg) -> self() ! {tcp_sent, Msg}, ok end),

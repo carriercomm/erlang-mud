@@ -46,6 +46,6 @@ ambiguous_partial_retrieve(Trie) ->
     trie:add_term(Trie, "foo", bar),
     trie:add_term(Trie, "fool", hardy),
     [ ?_assertEqual(undefined, trie:lookup_term(Trie, "ex")),
-      ?_assertEqual(undefined, trie:lookup_term(Trie, "f")),
+      ?_assertEqual(bar, trie:lookup_term(Trie, "f")),
       ?_assertEqual(value, trie:lookup_term(Trie, "exa")),
       ?_assertEqual(bar, trie:lookup_term(Trie, "foo")) ].
